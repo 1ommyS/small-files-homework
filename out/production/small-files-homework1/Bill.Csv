@@ -1,3 +1,7 @@
 name;quantity;unitPrice;discountApplied;finalTotal
+Milk;2;79.90;false;159.80
+Bread;1;45;false;45.00
+Eggs;12;6.50;true;70.20
+Oil;3;110;true;297.00
 TOTAL 0
 ERRORS 0

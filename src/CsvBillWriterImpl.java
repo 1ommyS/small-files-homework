@@ -13,12 +13,11 @@ public class CsvBillWriterImpl implements CsvBillWritter {
     @Override
     public void write(String path, ArrayList<BillLine> lines, BigDecimal total, int errors) throws IOException {
         try (FileWriter wr = new FileWriter(path);) {
-            lines = new ArrayList<>();
             wr.append("name;quantity;unitPrice;discountApplied;finalTotal\n");
             for (BillLine line : lines) {
                 wr.write(line.toString() + "\n");
             }
-            wr.write("TOTAL " + total + "\n");
+            wr.write("TOTAL " + total.toPlainString() + "\n");
             wr.write("ERRORS " + errors + "\n");
         }
 

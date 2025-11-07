@@ -1,6 +1,7 @@
 import Contracts.BillLine;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class BillLineImpl implements BillLine {
     private String name;
@@ -39,17 +40,16 @@ public class BillLineImpl implements BillLine {
 
     @Override
     public BigDecimal getFinalTotal() {
-        return finalTotal;
+        return finalTotal.setScale(2, RoundingMode.HALF_UP);
     }
 
     @Override
     public String toString() {
-        return "BillLineImpl{" +
-                "name='" + name + '\'' +
-                ", quantity=" + quantity +
-                ", unitPrice=" + unitPrice +
-                ", discountApplied=" + discountApplied +
-                ", finalTotal=" + finalTotal +
-                '}';
+        return
+                name + ";" +
+                        quantity + ";" +
+                        unitPrice + ";" +
+                        discountApplied + ";" +
+                        finalTotal;
     }
 }

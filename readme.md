@@ -67,7 +67,7 @@ import java.math.BigDecimal;
  *      - unitPrice >= 0.
  *  • Денежные значения хранить в BigDecimal, создавать только из строки.
  */
-public interface ProductLine {
+public interface Contracts.ProductLine {
     String getName();
     int getQuantity();
     BigDecimal getUnitPrice();
@@ -83,7 +83,7 @@ import java.math.BigDecimal;
  *  • unitPrice и finalTotal на уровне объекта уже приведены к масштабу 2 и округлены HALF_UP. .setScale(2, RoundingMode.HALF_UP)
  *  • discountApplied должен быть true, если на позицию применена скидка.
  */
-public interface BillLine {
+public interface BillLineImpl {
     String getName();
     int getQuantity();
     BigDecimal getUnitPrice();      // 2 знака, HALF_UP
@@ -111,7 +111,7 @@ import java.util.ArrayList;
 
 /**
  * Результат чтения входных данных.
- * @param <T> тип элементов (в данном случае нужно подставлять — ProductLine).
+ * @param <T> тип элементов (в данном случае нужно подставлять — Contracts.ProductLine).
  *
  * Контракт:
  *  • getItems() возвращает ArrayList
@@ -129,7 +129,7 @@ import java.util.ArrayList;
 
 /**
  * Результат расчёта счёта.
- * @param <T> тип рассчитанных строк (в данном случае — BillLine).
+ * @param <T> тип рассчитанных строк (в данном случае — BillLineImpl).
  *
  * Контракт:
  *  • getLines() — ArrayList всех позиций счёта.
@@ -142,10 +142,12 @@ public interface BillResult<T> {
 ```
 
 ```java
+import Contracts.ProductLine;
+
 import java.io.IOException;
 
 /**
- * Читает входной CSV (по умолчанию "products.csv") и формирует ReadResult<ProductLine>.
+ * Читает входной CSV (по умолчанию "products.csv") и формирует ReadResult<Contracts.ProductLine>.
  * Правила:
  *  • Пустые и начинающиеся с '#' строки — игнорируются.
  *  • Ожидается формат "name;quantity;price" (ровно 3 поля).
@@ -161,6 +163,8 @@ public interface CsvProductReader {
 ```java
 
 
+import Contracts.ProductLine;
+
 import java.util.ArrayList;
 
 /**
@@ -168,12 +172,12 @@ import java.util.ArrayList;
  *  1) subtotal = unitPrice * quantity (BigDecimal);
  *  2) discount = policy.discountFor(subtotal, quantity);
  *  3) finalTotal = subtotal - discount;
- *  4) Привести unitPrice и finalTotal к масштабу 2 (HALF_UP) в создаваемых BillLine;
+ *  4) Привести unitPrice и finalTotal к масштабу 2 (HALF_UP) в создаваемых BillLineImpl;
  *  5) total = сумма всех finalTotal, также 2 знака, HALF_UP.
  * Ограничения: без Stream API; обход ArrayList через циклы.
  */
 public interface BillCalculator {
-    BillResult<BillLine> calculate(ArrayList<ProductLine> products);
+    BillResult<BillLineImpl> calculate(ArrayList<ProductLine> products);
 }
 ```
 
@@ -197,7 +201,7 @@ import java.util.ArrayList;
  */
 public interface CsvBillWriter {
     void write(String path,
-               ArrayList<BillLine> lines,
+               ArrayList<BillLineImpl> lines,
                BigDecimal total,
                int errors) throws IOException;
 }
@@ -208,9 +212,9 @@ public interface CsvBillWriter {
 
 /**
  * Алгоритм:
- *  1) Прочитать вход: CsvProductReader#read → ReadResult<ProductLine>;
+ *  1) Прочитать вход: CsvProductReader#read → ReadResult<Contracts.ProductLine>;
  *  2) Создать DiscountPolicy (скидка 10% при quantity ≥ 3);
- *  3) Посчитать счёт: BillCalculator#calculate → BillResult<BillLine>;
+ *  3) Посчитать счёт: BillCalculator#calculate → BillResult<BillLineImpl>;
  *  4) Записать результат: CsvBillWriter#write (включая TOTAL и ERRORS).
  *
  * Реализация должна:

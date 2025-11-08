@@ -142,6 +142,8 @@ public interface BillResult<T> {
 ```
 
 ```java
+import impl.ProductLineImpl;
+
 import java.io.IOException;
 
 /**
@@ -154,12 +156,14 @@ import java.io.IOException;
  * Ограничения: без Stream API; использовать BufferedReader.
  */
 public interface CsvProductReader {
-    ReadResult<ProductLine> read(String path) throws IOException;
+    ReadResult<ProductLineImpl> read(String path) throws IOException;
 }
 ```
 
 ```java
 
+
+import impl.ProductLineImpl;
 
 import java.util.ArrayList;
 
@@ -173,7 +177,7 @@ import java.util.ArrayList;
  * Ограничения: без Stream API; обход ArrayList через циклы.
  */
 public interface BillCalculator {
-    BillResult<BillLine> calculate(ArrayList<ProductLine> products);
+    BillResult<BillLine> calculate(ArrayList<ProductLineImpl> products);
 }
 ```
 
